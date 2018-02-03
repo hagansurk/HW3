@@ -54,7 +54,7 @@ class Tweet(db.Model):
     __tablename__ = 'tweets'
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(280))
-    user_id = db.Column(db.Integer, foreignKey=True)
+    user_id = db.relationship('User', backref= 'tweet')
     def __repr__(self):
         return "{} (ID: {})".format(self.text,self.id)
 
@@ -76,9 +76,9 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True)
     display_name = db.Column(db.String(124))
-    user_id = Tweet.user_id
+    user_id = db.Column(db.Integer, db.ForeignKey('tweets.user_id'))
     def __repr__(self):
-        retutn "{} | ID: {}".format(self.username, self.id)
+        return "{} | ID: {}".format(self.username, self.id)
 
 
 ########################
@@ -92,6 +92,19 @@ class User(db.Model):
 ## -- display_name: the display name of the twitter user with that username (Required, + set up custom validation for this -- see below)
 
 # HINT: Check out index.html where the form will be rendered to decide what field names to use in the form class definition
+
+class Tweetform(FlaskForm):
+    text = StringField('What tweet would you like to exist: '. validators = [Required(), Length(max=280)])
+    username = StringField('What is the username of the user: ', validators = [Required(), Length(max=64), check_username])
+    display_name = StringField('What is the users display name: ', validators = [Required(), check_displayname])
+    submit = SubmitField('Submit')
+
+def check_username(form, field):
+    if '@' in field.data:
+        raise ValidationError('User name cannot contain an @ symbol')
+def check_displayname(form, field):
+    if len(field.data.split()) > 2:
+        raise ValidationError('Display name cannot be longer than 2 words')
 
 # TODO 364: Set up custom validation for this form such that:
 # - the twitter username may NOT start with an "@" symbol (the template will put that in where it should appear)
