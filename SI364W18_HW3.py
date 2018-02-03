@@ -1,5 +1,4 @@
-## SI 364 - Winter 2018
-## HW 3
+## SI 364 - Winter 2018 HW 3
 
 ####################
 ## Import statements
@@ -51,6 +50,14 @@ db = SQLAlchemy(app) # For database use
 ## -- text (String, up to 280 chars)
 ## -- user_id (Integer, ID of user posted -- ForeignKey)
 
+class Tweet(db.Model):
+    __tablename__ = 'tweets'
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.String(280))
+    user_id = db.Column(db.Integer, foreignKey=True)
+    def __repr__(self):
+        return "{} (ID: {})".format(self.text,self.id)
+
 ## Should have a __repr__ method that returns strings of a format like:
 #### {Tweet text...} (ID: {tweet id})
 
@@ -63,6 +70,15 @@ db = SQLAlchemy(app) # For database use
 
 ## Should have a __repr__ method that returns strings of a format like:
 #### {username} | ID: {id}
+
+class User(db.Model):
+    __tablename__ = 'user'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), unique=True)
+    display_name = db.Column(db.String(124))
+    user_id = Tweet.user_id
+    def __repr__(self):
+        retutn "{} | ID: {}".format(self.username, self.id)
 
 
 ########################
