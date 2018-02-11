@@ -9,7 +9,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, ValidationError
 from wtforms.validators import Required, Length
 from flask_sqlalchemy import SQLAlchemy
-import os
+
 
 ############################
 # Application configurations
@@ -156,11 +156,8 @@ def index():
     text1,username1,display_name1 = None,None,None
     if request.method == 'POST' and form.validate_on_submit():
         text1 = form.text.data
-        print(text1)
         username1 = form.username.data
-        print(username1)
         display_name1 = form.display_name.data
-        print(display_name1)
     ## Find out if there's already a user with the entered username
     ## If there is, save it in a variable: user
     ## Or if there is not, then create one and add it to the database
@@ -175,15 +172,16 @@ def index():
             flash('Tweet successfully added')
         else:
             tweet = Tweet.query.filter_by(text=text1).first()
-            print(type(tweet))
+            # print(type(tweet))
             if tweet is None:
                 tex = Tweet(text = text1, user_id = username.id)
                 db.session.add(tex)
                 db.session.commit()
+                flash('Tweet successfully added')
             else:
-                flash("Message already exists")
+                flash("Message already exists!! Try again with new tweet and user")
                 return redirect(url_for('see_all_tweets'))
-            flash('Tweet successfully added')
+            
 
         return redirect(url_for('index'))
             
@@ -205,16 +203,32 @@ def index():
 
 @app.route('/all_tweets')
 def see_all_tweets():
-    pass # Replace with code
+    # Replace with code
     # TODO 364: Fill in this view function so that it can successfully render the template all_tweets.html, which is provided.
     # HINT: Careful about what type the templating in all_tweets.html is expecting! It's a list of... not lists, but...
     # HINT #2: You'll have to make a query for the tweet and, based on that, another query for the username that goes with it...
-    
+    all_tweets= []
+    tweets_q = Tweet.query.all()
+    print(tweets_q)
+    for elem in tweets_q:
+        tweet_text = elem.text
+        tweet_id = elem.user_id
+        print(tweet_id)
+        tweet_name = User.query.filter_by(id=tweet_id).all()
+        print(tweet_name)
+        for elem1 in tweet_name:
+            #print(elem1)
+            user_n = elem1.username
+            tupl = (tweet_text, user_n)
+            all_tweets.append(tupl)
+    return render_template('all_tweets.html', all_tweets = all_tweets)
 
 @app.route('/all_users')
 def see_all_users():
-    pass # Replace with code
+    # Replace with code
     # TODO 364: Fill in this view function so it can successfully render the template all_users.html, which is provided.
+    user_q = User.query.all()
+    return render_template('all_users.html', users = user_q)
 
 # TODO 364
 # Create another route (no scaffolding provided) at /longest_tweet with a view function get_longest_tweet (see details below for what it should do)
