@@ -169,7 +169,7 @@ def index():
             tex = Tweet(text = text1, user_id= user.id)
             db.session.add(tex)
             db.session.commit()
-            flash('Tweet successfully added')
+            flash('Tweet successfully added!!')
         else:
             tweet = Tweet.query.filter_by(text=text1).first()
             # print(type(tweet))
@@ -177,7 +177,7 @@ def index():
                 tex = Tweet(text = text1, user_id = username.id)
                 db.session.add(tex)
                 db.session.commit()
-                flash('Tweet successfully added')
+                flash('Tweet successfully added!!')
             else:
                 flash("Message already exists!! Try again with new tweet and user")
                 return redirect(url_for('see_all_tweets'))
