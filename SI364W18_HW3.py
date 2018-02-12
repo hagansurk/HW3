@@ -234,7 +234,25 @@ def see_all_users():
 # Create another route (no scaffolding provided) at /longest_tweet with a view function get_longest_tweet (see details below for what it should do)
 # TODO 364
 # Create a template to accompany it called longest_tweet.html that extends from base.html.
-
+@app.route('/longest_tweet')
+def longest_tweet():
+    tweet_dict = {}
+    tweet_q1 = Tweet.query.all()
+    for elem in tweet_q1:
+        tweet1 = elem.text
+        tweet2 = tweet1.replace(' ', '')
+        tweet_id = elem.user_id
+        user_name = User.query.filter_by(id = tweet_id).all()
+        for elem1 in user_name:
+            user_n1 = elem1.username
+            tweet_dict[user_n1] = (tweet1, tweet2)
+    items = tweet_dict.items()
+    tweet_sort = sorted(items, key = lambda x: len(x[1][1]), reverse = True)
+    print(tweet_sort)
+    longest_tweet = tweet_sort[0][1][0]
+    username = tweet_sort[0][0]
+       
+    return render_template('longest_tweet.html', longest_tweet = longest_tweet, username = username)
 # NOTE:
 # This view function should compute and render a template (as shown in the sample application) that shows the text of the tweet currently saved in the database which has the most NON-WHITESPACE characters in it, and the username AND display name of the user that it belongs to.
 # NOTE: This is different (or could be different) from the tweet with the most characters including whitespace!
